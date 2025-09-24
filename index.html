@@ -477,6 +477,24 @@
             let touchOffset = { x: 0, y: 0 };
             let ghostElement = null;
             let isDragging = false;
+            let autoScrollInterval = null;
+
+            function autoScroll(clientY) {
+                const scrollThreshold = 150; // pixels from edge to start scrolling
+                const scrollSpeed = 12; // pixels per frame
+                const windowHeight = window.innerHeight;
+                
+                if (clientY < scrollThreshold) {
+                    // Scroll up
+                    window.scrollBy(0, -scrollSpeed);
+                    return true;
+                } else if (clientY > windowHeight - scrollThreshold) {
+                    // Scroll down
+                    window.scrollBy(0, scrollSpeed);
+                    return true;
+                }
+                return false;
+            }
 
             document.addEventListener('touchstart', function(e) {
                 if (e.target.classList.contains('drag-item')) {
@@ -514,6 +532,16 @@
                         document.body.appendChild(ghostElement);
                         
                         touchItem.style.opacity = '0.3';
+                        
+                        // Start auto-scroll interval
+                        autoScrollInterval = setInterval(() => {
+                            if (isDragging && ghostElement) {
+                                const currentTouch = e.touches[0];
+                                if (currentTouch) {
+                                    autoScroll(currentTouch.clientY);
+                                }
+                            }
+                        }, 20); // ~50fps for smoother performance
                     }
                     
                     if (ghostElement) {
@@ -521,20 +549,26 @@
                         ghostElement.style.left = (touch.clientX - touchOffset.x) + 'px';
                         ghostElement.style.top = (touch.clientY - touchOffset.y) + 'px';
                         
-                        // Find drop zone under touch
-                        ghostElement.style.display = 'none';
-                        const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-                        ghostElement.style.display = 'block';
-                        const dropZone = elementBelow?.closest('.drop-zone');
+                        // Auto-scroll based on touch position - more aggressive
+                        const isScrolling = autoScroll(touch.clientY);
                         
-                        // Remove previous highlights
-                        document.querySelectorAll('.drop-zone.drag-over').forEach(zone => {
-                            zone.classList.remove('drag-over');
-                        });
-                        
-                        // Highlight current drop zone
-                        if (dropZone) {
-                            dropZone.classList.add('drag-over');
+                        // Only update drop zone highlights if not actively scrolling
+                        if (!isScrolling) {
+                            // Find drop zone under touch
+                            ghostElement.style.display = 'none';
+                            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                            ghostElement.style.display = 'block';
+                            const dropZone = elementBelow?.closest('.drop-zone');
+                            
+                            // Remove previous highlights
+                            document.querySelectorAll('.drop-zone.drag-over').forEach(zone => {
+                                zone.classList.remove('drag-over');
+                            });
+                            
+                            // Highlight current drop zone
+                            if (dropZone) {
+                                dropZone.classList.add('drag-over');
+                            }
                         }
                     }
                     
@@ -544,6 +578,12 @@
 
             document.addEventListener('touchend', function(e) {
                 if (touchItem) {
+                    // Clear auto-scroll interval
+                    if (autoScrollInterval) {
+                        clearInterval(autoScrollInterval);
+                        autoScrollInterval = null;
+                    }
+                    
                     if (isDragging && ghostElement) {
                         const touch = e.changedTouches[0];
                         ghostElement.style.display = 'none';
@@ -856,5 +896,5 @@
             }
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9844067c05df4bab',t:'MTc1ODczNTE5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98440fc8d091ed8c',t:'MTc1ODczNTU3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
