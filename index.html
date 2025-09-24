@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule of Life Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .drag-item {
+            cursor: grab;
+            transition: all 0.2s ease;
+            touch-action: none;
+            user-select: none;
+        }
+        .drag-item:active {
+            cursor: grabbing;
+            transform: rotate(2deg) scale(1.05);
+        }
+        .drag-item.dragging {
+            opacity: 0.5;
+            z-index: 1000;
+            position: fixed;
+            pointer-events: none;
+        }
+        .drop-zone {
+            min-height: 80px;
+            transition: all 0.2s ease;
+        }
+        .drop-zone.drag-over {
+            background-color: rgba(59, 130, 246, 0.1);
+            border: 2px dashed #3b82f6;
+        }
+        .block-spiritual { background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%); }
+        .block-work { background: linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%); }
+        .block-rest { background: linear-gradient(135deg, #f3e5f5 0%, #ce93d8 100%); }
+        .block-reflection { background: linear-gradient(135deg, #e8f5e8 0%, #a5d6a7 100%); }
+        .block-community { background: linear-gradient(135deg, #fff8e1 0%, #fff176 100%); }
+        .block-health { background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%); }
+        
+        .time-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-cols-8 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .grid-cols-8 > div:nth-child(n+5):nth-child(-n+8) {
+                display: none;
+            }
+            .grid-cols-8 > div:nth-child(n+13):nth-child(-n+16) {
+                display: none;
+            }
+            .grid-cols-8 > div:nth-child(n+21):nth-child(-n+24) {
+                display: none;
+            }
+            .drop-zone {
+                min-height: 60px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <h1 class="text-3xl font-light text-slate-800 text-center">Rule of Life Builder</h1>
+            <p class="text-slate-600 text-center mt-2">Design your intentional rhythm of prayer, work, and rest</p>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Spiritual Practices Library -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+            <h2 class="text-xl font-medium text-slate-800 mb-6">Spiritual Practices</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                <div class="drag-item block-spiritual p-3 rounded-lg border border-blue-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="spiritual" data-title="Morning Prayer">
+                    🙏<br>Morning Prayer
+                </div>
+                <div class="drag-item block-spiritual p-3 rounded-lg border border-blue-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="spiritual" data-title="Scripture Reading">
+                    📖<br>Scripture Reading
+                </div>
+                <div class="drag-item block-spiritual p-3 rounded-lg border border-blue-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="spiritual" data-title="Contemplation">
+                    🕯️<br>Contemplation
+                </div>
+                <div class="drag-item block-spiritual p-3 rounded-lg border border-blue-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="spiritual" data-title="Evening Prayer">
+                    🌅<br>Evening Prayer
+                </div>
+                <div class="drag-item block-work p-3 rounded-lg border border-orange-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="work" data-title="Focused Work">
+                    💼<br>Focused Work
+                </div>
+                <div class="drag-item block-work p-3 rounded-lg border border-orange-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="work" data-title="Creative Work">
+                    🎨<br>Creative Work
+                </div>
+                <div class="drag-item block-rest p-3 rounded-lg border border-purple-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="rest" data-title="Sabbath Rest">
+                    🛌<br>Sabbath Rest
+                </div>
+                <div class="drag-item block-health p-3 rounded-lg border border-pink-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="health" data-title="Exercise">
+                    🏃<br>Exercise
+                </div>
+                <div class="drag-item block-community p-3 rounded-lg border border-yellow-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="community" data-title="Family Time">
+                    👨‍👩‍👧‍👦<br>Family Time
+                </div>
+                <div class="drag-item block-community p-3 rounded-lg border border-yellow-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="community" data-title="Fellowship">
+                    🤝<br>Fellowship
+                </div>
+                <div class="drag-item block-reflection p-3 rounded-lg border border-green-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="reflection" data-title="Journaling">
+                    📝<br>Journaling
+                </div>
+                <div class="drag-item block-reflection p-3 rounded-lg border border-green-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="reflection" data-title="Examen">
+                    🔍<br>Examen
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Schedule -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-medium text-slate-800">Weekly Rule of Life</h2>
+                <div class="flex gap-3">
+                    <button onclick="clearSchedule()" class="px-4 py-2 text-slate-600 hover:text-slate-800 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+                        Clear All
+                    </button>
+                    <button onclick="saveSchedule()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Save Schedule
+                    </button>
+                </div>
+            </div>
+
+            <!-- Schedule Grid -->
+            <div class="grid grid-cols-8 gap-2 text-sm">
+                <!-- Header Row -->
+                <div class="p-3"></div>
+                <div class="p-3 text-center font-medium text-slate-700 bg-slate-50 rounded-lg">Mon</div>
+                <div class="p-3 text-center font-medium text-slate-700 bg-slate-50 rounded-lg">Tue</div>
+                <div class="p-3 text-center font-medium text-slate-700 bg-slate-50 rounded-lg">Wed</div>
+                <div class="p-3 text-center font-medium text-slate-700 bg-slate-50 rounded-lg">Thu</div>
+                <div class="p-3 text-center font-medium text-slate-700 bg-slate-50 rounded-lg">Fri</div>
+                <div class="p-3 text-center font-medium text-slate-700 bg-slate-50 rounded-lg">Sat</div>
+                <div class="p-3 text-center font-medium text-slate-700 bg-slate-50 rounded-lg">Sun</div>
+
+                <!-- Morning Row -->
+                <div class="p-3 font-medium text-slate-700 bg-slate-50 rounded-lg flex items-center justify-center">Morning</div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="monday" data-time="morning"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="tuesday" data-time="morning"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="wednesday" data-time="morning"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="thursday" data-time="morning"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="friday" data-time="morning"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="saturday" data-time="morning"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="sunday" data-time="morning"></div>
+
+                <!-- Midday Row -->
+                <div class="p-3 font-medium text-slate-700 bg-slate-50 rounded-lg flex items-center justify-center">Midday</div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="monday" data-time="midday"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="tuesday" data-time="midday"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="wednesday" data-time="midday"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="thursday" data-time="midday"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="friday" data-time="midday"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="saturday" data-time="midday"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="sunday" data-time="midday"></div>
+
+                <!-- Evening Row -->
+                <div class="p-3 font-medium text-slate-700 bg-slate-50 rounded-lg flex items-center justify-center">Evening</div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="monday" data-time="evening"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="tuesday" data-time="evening"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="wednesday" data-time="evening"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="thursday" data-time="evening"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="friday" data-time="evening"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="saturday" data-time="evening"></div>
+                <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="sunday" data-time="evening"></div>
+            </div>
+        </div>
+
+        <!-- Reflection Panel -->
+        <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h3 class="text-lg font-medium text-slate-800 mb-4">Daily Reflection</h3>
+            <textarea 
+                id="reflection-notes" 
+                placeholder="Reflect on your Rule of Life... How does this rhythm serve your spiritual growth? What adjustments might help you live more intentionally?"
+                class="w-full h-32 p-4 border border-slate-200 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            ></textarea>
+            <div class="mt-4 text-sm text-slate-600">
+                <p><em>"The goal is not to be busy but to be fruitful." - John Mark Comer</em></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-medium text-slate-800 mb-4">Edit Practice</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Title</label>
+                    <input type="text" id="edit-title" class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Notes</label>
+                    <textarea id="edit-notes" class="w-full p-3 border border-slate-200 rounded-lg h-24 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Add personal notes or intentions..."></textarea>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeEditModal()" class="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors">
+                    Cancel
+                </button>
+                <button onclick="deleteBlock()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                    Delete
+                </button>
+                <button onclick="saveEdit()" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let draggedElement = null;
+        let currentEditingBlock = null;
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDragAndDrop();
+            setupTouchSupport();
+            loadSchedule();
+        });
+
+        function setupDragAndDrop() {
+            // Handle drag start
+            document.addEventListener('dragstart', function(e) {
+                if (e.target.classList.contains('drag-item')) {
+                    draggedElement = e.target;
+                    e.target.style.opacity = '0.5';
+                }
+            });
+
+            // Handle drag end
+            document.addEventListener('dragend', function(e) {
+                if (e.target.classList.contains('drag-item')) {
+                    e.target.style.opacity = '1';
+                }
+            });
+
+            // Handle drag over
+            document.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                if (e.target.classList.contains('drop-zone')) {
+                    e.target.classList.add('drag-over');
+                }
+            });
+
+            // Handle drag leave
+            document.addEventListener('dragleave', function(e) {
+                if (e.target.classList.contains('drop-zone')) {
+                    e.target.classList.remove('drag-over');
+                }
+            });
+
+            // Handle drop
+            document.addEventListener('drop', function(e) {
+                e.preventDefault();
+                let dropZone = e.target;
+                
+                // If dropped on a block, find the parent drop zone
+                if (!dropZone.classList.contains('drop-zone')) {
+                    dropZone = dropZone.closest('.drop-zone');
+                }
+                
+                if (dropZone && draggedElement) {
+                    dropZone.classList.remove('drag-over');
+                    
+                    // Create new block in schedule
+                    const newBlock = createScheduleBlock(
+                        draggedElement.dataset.title,
+                        draggedElement.dataset.type,
+                        dropZone.dataset.day,
+                        dropZone.dataset.time
+                    );
+                    
+                    // Add to existing blocks instead of replacing
+                    dropZone.appendChild(newBlock);
+                    
+                    draggedElement = null;
+                }
+            });
+        }
+
+        // Enhanced touch support for mobile devices
+        function setupTouchSupport() {
+            let touchItem = null;
+            let touchOffset = { x: 0, y: 0 };
+            let ghostElement = null;
+            let isDragging = false;
+
+            document.addEventListener('touchstart', function(e) {
+                if (e.target.classList.contains('drag-item')) {
+                    touchItem = e.target;
+                    const touch = e.touches[0];
+                    const rect = touchItem.getBoundingClientRect();
+                    touchOffset.x = touch.clientX - rect.left;
+                    touchOffset.y = touch.clientY - rect.top;
+                    isDragging = false;
+                    
+                    // Add visual feedback
+                    touchItem.style.transform = 'scale(1.05)';
+                    touchItem.style.zIndex = '100';
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchmove', function(e) {
+                if (touchItem) {
+                    if (!isDragging) {
+                        isDragging = true;
+                        const touch = e.touches[0];
+                        const rect = touchItem.getBoundingClientRect();
+                        
+                        // Create ghost element
+                        ghostElement = touchItem.cloneNode(true);
+                        ghostElement.classList.add('dragging');
+                        ghostElement.style.position = 'fixed';
+                        ghostElement.style.left = (touch.clientX - touchOffset.x) + 'px';
+                        ghostElement.style.top = (touch.clientY - touchOffset.y) + 'px';
+                        ghostElement.style.width = rect.width + 'px';
+                        ghostElement.style.zIndex = '1000';
+                        ghostElement.style.pointerEvents = 'none';
+                        ghostElement.style.opacity = '0.8';
+                        ghostElement.style.transform = 'rotate(3deg)';
+                        document.body.appendChild(ghostElement);
+                        
+                        touchItem.style.opacity = '0.3';
+                    }
+                    
+                    if (ghostElement) {
+                        const touch = e.touches[0];
+                        ghostElement.style.left = (touch.clientX - touchOffset.x) + 'px';
+                        ghostElement.style.top = (touch.clientY - touchOffset.y) + 'px';
+                        
+                        // Find drop zone under touch
+                        ghostElement.style.display = 'none';
+                        const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                        ghostElement.style.display = 'block';
+                        const dropZone = elementBelow?.closest('.drop-zone');
+                        
+                        // Remove previous highlights
+                        document.querySelectorAll('.drop-zone.drag-over').forEach(zone => {
+                            zone.classList.remove('drag-over');
+                        });
+                        
+                        // Highlight current drop zone
+                        if (dropZone) {
+                            dropZone.classList.add('drag-over');
+                        }
+                    }
+                    
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchend', function(e) {
+                if (touchItem) {
+                    if (isDragging && ghostElement) {
+                        const touch = e.changedTouches[0];
+                        ghostElement.style.display = 'none';
+                        const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                        const dropZone = elementBelow?.closest('.drop-zone');
+                        
+                        if (dropZone) {
+                            // Create new block in schedule
+                            const newBlock = createScheduleBlock(
+                                touchItem.dataset.title,
+                                touchItem.dataset.type,
+                                dropZone.dataset.day,
+                                dropZone.dataset.time
+                            );
+                            
+                            // Add to existing blocks instead of replacing
+                            dropZone.appendChild(newBlock);
+                            
+                            // Success feedback
+                            dropZone.style.backgroundColor = '#dcfce7';
+                            setTimeout(() => {
+                                dropZone.style.backgroundColor = '';
+                            }, 300);
+                        }
+                        
+                        // Clean up
+                        document.body.removeChild(ghostElement);
+                        document.querySelectorAll('.drop-zone.drag-over').forEach(zone => {
+                            zone.classList.remove('drag-over');
+                        });
+                    }
+                    
+                    // Reset styles
+                    touchItem.style.opacity = '1';
+                    touchItem.style.transform = '';
+                    touchItem.style.zIndex = '';
+                    
+                    touchItem = null;
+                    ghostElement = null;
+                    isDragging = false;
+                }
+            });
+        }
+
+        function createScheduleBlock(title, type, day, time) {
+            const block = document.createElement('div');
+            block.className = `block-${type} p-2 mb-1 rounded-lg border text-xs font-medium text-slate-700 cursor-pointer hover:shadow-md transition-shadow relative`;
+            block.textContent = title;
+            block.dataset.title = title;
+            block.dataset.type = type;
+            block.dataset.day = day;
+            block.dataset.time = time;
+            block.dataset.notes = '';
+            
+            // Add delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '×';
+            deleteBtn.className = 'absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs leading-none hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                block.remove();
+                saveSchedule();
+            };
+            
+            // Add group class to parent for hover effect
+            block.classList.add('group');
+            block.appendChild(deleteBtn);
+            
+            // Add click handler for editing
+            block.addEventListener('click', function() {
+                openEditModal(block);
+            });
+            
+            return block;
+        }
+
+        function openEditModal(block) {
+            currentEditingBlock = block;
+            document.getElementById('edit-title').value = block.dataset.title;
+            document.getElementById('edit-notes').value = block.dataset.notes || '';
+            document.getElementById('edit-modal').classList.remove('hidden');
+            document.getElementById('edit-modal').classList.add('flex');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+            document.getElementById('edit-modal').classList.remove('flex');
+            currentEditingBlock = null;
+        }
+
+        function saveEdit() {
+            if (currentEditingBlock) {
+                const newTitle = document.getElementById('edit-title').value;
+                const newNotes = document.getElementById('edit-notes').value;
+                
+                currentEditingBlock.textContent = newTitle;
+                currentEditingBlock.dataset.title = newTitle;
+                currentEditingBlock.dataset.notes = newNotes;
+                
+                closeEditModal();
+                saveSchedule();
+            }
+        }
+
+        function deleteBlock() {
+            if (currentEditingBlock) {
+                currentEditingBlock.parentElement.innerHTML = '';
+                closeEditModal();
+                saveSchedule();
+            }
+        }
+
+        function clearSchedule() {
+            if (confirm('Are you sure you want to clear your entire schedule?')) {
+                document.querySelectorAll('.drop-zone').forEach(zone => {
+                    // Remove all child blocks
+                    while (zone.firstChild) {
+                        zone.removeChild(zone.firstChild);
+                    }
+                });
+                document.getElementById('reflection-notes').value = '';
+                saveSchedule();
+            }
+        }
+
+        function saveSchedule() {
+            const schedule = {};
+            const reflection = document.getElementById('reflection-notes').value;
+            
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                const day = zone.dataset.day;
+                const time = zone.dataset.time;
+                const blocks = zone.querySelectorAll('div:not(button)');
+                
+                if (!schedule[day]) schedule[day] = {};
+                
+                if (blocks.length > 0) {
+                    schedule[day][time] = Array.from(blocks).map(block => ({
+                        title: block.dataset.title,
+                        type: block.dataset.type,
+                        notes: block.dataset.notes || ''
+                    }));
+                } else {
+                    schedule[day][time] = [];
+                }
+            });
+            
+            localStorage.setItem('ruleOfLife', JSON.stringify({
+                schedule: schedule,
+                reflection: reflection
+            }));
+            
+            // Show save confirmation
+            const saveBtn = document.querySelector('button[onclick="saveSchedule()"]');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Saved!';
+            saveBtn.classList.add('bg-green-600');
+            saveBtn.classList.remove('bg-blue-600');
+            
+            setTimeout(() => {
+                saveBtn.textContent = originalText;
+                saveBtn.classList.remove('bg-green-600');
+                saveBtn.classList.add('bg-blue-600');
+            }, 2000);
+        }
+
+        function loadSchedule() {
+            const saved = localStorage.getItem('ruleOfLife');
+            if (saved) {
+                const data = JSON.parse(saved);
+                
+                // Load schedule blocks
+                Object.keys(data.schedule).forEach(day => {
+                    Object.keys(data.schedule[day]).forEach(time => {
+                        const blocksData = data.schedule[day][time];
+                        if (blocksData && Array.isArray(blocksData)) {
+                            const zone = document.querySelector(`[data-day="${day}"][data-time="${time}"]`);
+                            if (zone) {
+                                blocksData.forEach(blockData => {
+                                    const block = createScheduleBlock(blockData.title, blockData.type, day, time);
+                                    block.dataset.notes = blockData.notes || '';
+                                    zone.appendChild(block);
+                                });
+                            }
+                        } else if (blocksData && !Array.isArray(blocksData)) {
+                            // Handle old format (single block)
+                            const zone = document.querySelector(`[data-day="${day}"][data-time="${time}"]`);
+                            if (zone) {
+                                const block = createScheduleBlock(blocksData.title, blocksData.type, day, time);
+                                block.dataset.notes = blocksData.notes || '';
+                                zone.appendChild(block);
+                            }
+                        }
+                    });
+                });
+                
+                // Load reflection
+                if (data.reflection) {
+                    document.getElementById('reflection-notes').value = data.reflection;
+                }
+            }
+        }
+
+        // Auto-save reflection notes
+        document.getElementById('reflection-notes').addEventListener('input', function() {
+            setTimeout(saveSchedule, 1000);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9843780aa3505869',t:'MTc1ODcyOTM1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
