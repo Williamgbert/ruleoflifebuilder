@@ -37,26 +37,73 @@
         .block-community { background: linear-gradient(135deg, #fff8e1 0%, #fff176 100%); }
         .block-health { background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%); }
         
-        .time-label {
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-        }
-        
         @media (max-width: 768px) {
-            .grid-cols-8 {
-                grid-template-columns: repeat(4, 1fr);
+            .desktop-grid {
+                display: none !important;
             }
-            .grid-cols-8 > div:nth-child(n+5):nth-child(-n+8) {
-                display: none;
+            .mobile-grid {
+                display: block !important;
             }
-            .grid-cols-8 > div:nth-child(n+13):nth-child(-n+16) {
-                display: none;
+            .day-column {
+                margin-bottom: 1.5rem;
+                border: 1px solid #e2e8f0;
+                border-radius: 0.75rem;
+                padding: 1rem;
+                background: white;
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
             }
-            .grid-cols-8 > div:nth-child(n+21):nth-child(-n+24) {
-                display: none;
+            .day-header {
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 0.75rem;
+                text-align: center;
+                background: #f8fafc;
+                padding: 0.75rem;
+                border-radius: 0.5rem;
+                font-size: 1.1rem;
+            }
+            .time-slot {
+                margin-bottom: 0.75rem;
+            }
+            .time-slot:last-child {
+                margin-bottom: 0;
+            }
+            .time-label-mobile {
+                font-weight: 500;
+                color: #6b7280;
+                margin-bottom: 0.5rem;
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
             }
             .drop-zone {
-                min-height: 60px;
+                min-height: 70px;
+                padding: 0.75rem;
+            }
+            .mobile-grid .drop-zone {
+                border-width: 2px;
+                border-style: dashed;
+                border-color: #cbd5e1;
+                border-radius: 0.5rem;
+                transition: all 0.2s ease;
+            }
+            .mobile-grid .drop-zone:hover {
+                border-color: #3b82f6;
+                background-color: rgba(59, 130, 246, 0.05);
+            }
+            .mobile-grid .drop-zone.drag-over {
+                background-color: rgba(59, 130, 246, 0.1);
+                border-color: #3b82f6;
+                border-width: 3px;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .mobile-grid {
+                display: none !important;
+            }
+            .desktop-grid {
+                display: grid !important;
             }
         }
     </style>
@@ -116,20 +163,20 @@
 
         <!-- Weekly Schedule -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
                 <h2 class="text-xl font-medium text-slate-800">Weekly Rule of Life</h2>
-                <div class="flex gap-3">
-                    <button onclick="clearSchedule()" class="px-4 py-2 text-slate-600 hover:text-slate-800 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
-                        Clear All
+                <div class="flex gap-2 flex-wrap sm:gap-3">
+                    <button onclick="exportToCalendar()" class="px-3 py-2 text-sm sm:px-4 sm:text-base bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        Export
                     </button>
-                    <button onclick="saveSchedule()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        Save Schedule
+                    <button onclick="saveSchedule()" class="px-3 py-2 text-sm sm:px-4 sm:text-base bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Save
                     </button>
                 </div>
             </div>
 
-            <!-- Schedule Grid -->
-            <div class="grid grid-cols-8 gap-2 text-sm">
+            <!-- Desktop Schedule Grid -->
+            <div class="desktop-grid grid grid-cols-8 gap-2 text-sm">
                 <!-- Header Row -->
                 <div class="p-3"></div>
                 <div class="p-3 text-center font-medium text-slate-700 bg-slate-50 rounded-lg">Mon</div>
@@ -170,6 +217,128 @@
                 <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="saturday" data-time="evening"></div>
                 <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="sunday" data-time="evening"></div>
             </div>
+
+            <!-- Mobile Schedule Grid -->
+            <div class="mobile-grid">
+                <!-- Monday -->
+                <div class="day-column">
+                    <div class="day-header">Monday</div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Morning</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="monday" data-time="morning"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Midday</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="monday" data-time="midday"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Evening</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="monday" data-time="evening"></div>
+                    </div>
+                </div>
+
+                <!-- Tuesday -->
+                <div class="day-column">
+                    <div class="day-header">Tuesday</div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Morning</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="tuesday" data-time="morning"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Midday</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="tuesday" data-time="midday"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Evening</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="tuesday" data-time="evening"></div>
+                    </div>
+                </div>
+
+                <!-- Wednesday -->
+                <div class="day-column">
+                    <div class="day-header">Wednesday</div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Morning</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="wednesday" data-time="morning"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Midday</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="wednesday" data-time="midday"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Evening</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="wednesday" data-time="evening"></div>
+                    </div>
+                </div>
+
+                <!-- Thursday -->
+                <div class="day-column">
+                    <div class="day-header">Thursday</div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Morning</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="thursday" data-time="morning"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Midday</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="thursday" data-time="midday"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Evening</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="thursday" data-time="evening"></div>
+                    </div>
+                </div>
+
+                <!-- Friday -->
+                <div class="day-column">
+                    <div class="day-header">Friday</div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Morning</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="friday" data-time="morning"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Midday</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="friday" data-time="midday"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Evening</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="friday" data-time="evening"></div>
+                    </div>
+                </div>
+
+                <!-- Saturday -->
+                <div class="day-column">
+                    <div class="day-header">Saturday</div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Morning</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="saturday" data-time="morning"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Midday</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="saturday" data-time="midday"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Evening</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[80px] hover:border-blue-300 transition-colors" data-day="saturday" data-time="evening"></div>
+                    </div>
+                </div>
+
+                <!-- Sunday -->
+                <div class="day-column">
+                    <div class="day-header">Sunday</div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Morning</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="sunday" data-time="morning"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Midday</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="sunday" data-time="midday"></div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label-mobile">Evening</div>
+                        <div class="drop-zone border-2 border-dashed border-slate-200 rounded-lg p-2 min-h-[60px] hover:border-blue-300 transition-colors" data-day="sunday" data-time="evening"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Reflection Panel -->
@@ -209,6 +378,23 @@
                 </button>
                 <button onclick="saveEdit()" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="export-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <h3 class="text-lg font-medium text-slate-800 mb-4">Export to Calendar</h3>
+            <p class="text-sm text-slate-600 mb-4">Copy the text below and paste it into your calendar app to create events for your Rule of Life:</p>
+            <textarea id="export-text" class="w-full h-64 p-4 border border-slate-200 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm" readonly></textarea>
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeExportModal()" class="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors">
+                    Close
+                </button>
+                <button onclick="copyExportText()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    Copy to Clipboard
                 </button>
             </div>
         </div>
@@ -404,7 +590,7 @@
 
         function createScheduleBlock(title, type, day, time) {
             const block = document.createElement('div');
-            block.className = `block-${type} p-2 mb-1 rounded-lg border text-xs font-medium text-slate-700 cursor-pointer hover:shadow-md transition-shadow relative`;
+            block.className = `block-${type} p-2 mb-1 rounded-lg border text-xs font-medium text-slate-700 cursor-pointer hover:shadow-md transition-shadow relative group`;
             block.textContent = title;
             block.dataset.title = title;
             block.dataset.type = type;
@@ -422,8 +608,6 @@
                 saveSchedule();
             };
             
-            // Add group class to parent for hover effect
-            block.classList.add('group');
             block.appendChild(deleteBtn);
             
             // Add click handler for editing
@@ -457,6 +641,17 @@
                 currentEditingBlock.dataset.title = newTitle;
                 currentEditingBlock.dataset.notes = newNotes;
                 
+                // Re-add the delete button since textContent overwrites it
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '×';
+                deleteBtn.className = 'absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs leading-none hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity';
+                deleteBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    currentEditingBlock.remove();
+                    saveSchedule();
+                };
+                currentEditingBlock.appendChild(deleteBtn);
+                
                 closeEditModal();
                 saveSchedule();
             }
@@ -464,7 +659,7 @@
 
         function deleteBlock() {
             if (currentEditingBlock) {
-                currentEditingBlock.parentElement.innerHTML = '';
+                currentEditingBlock.remove();
                 closeEditModal();
                 saveSchedule();
             }
@@ -473,10 +668,9 @@
         function clearSchedule() {
             if (confirm('Are you sure you want to clear your entire schedule?')) {
                 document.querySelectorAll('.drop-zone').forEach(zone => {
-                    // Remove all child blocks
-                    while (zone.firstChild) {
-                        zone.removeChild(zone.firstChild);
-                    }
+                    // Remove all practice blocks (elements with data-title attribute)
+                    const practiceBlocks = zone.querySelectorAll('[data-title]');
+                    practiceBlocks.forEach(block => block.remove());
                 });
                 document.getElementById('reflection-notes').value = '';
                 saveSchedule();
@@ -534,22 +728,22 @@
                     Object.keys(data.schedule[day]).forEach(time => {
                         const blocksData = data.schedule[day][time];
                         if (blocksData && Array.isArray(blocksData)) {
-                            const zone = document.querySelector(`[data-day="${day}"][data-time="${time}"]`);
-                            if (zone) {
+                            const zones = document.querySelectorAll(`[data-day="${day}"][data-time="${time}"]`);
+                            zones.forEach(zone => {
                                 blocksData.forEach(blockData => {
                                     const block = createScheduleBlock(blockData.title, blockData.type, day, time);
                                     block.dataset.notes = blockData.notes || '';
                                     zone.appendChild(block);
                                 });
-                            }
+                            });
                         } else if (blocksData && !Array.isArray(blocksData)) {
                             // Handle old format (single block)
-                            const zone = document.querySelector(`[data-day="${day}"][data-time="${time}"]`);
-                            if (zone) {
+                            const zones = document.querySelectorAll(`[data-day="${day}"][data-time="${time}"]`);
+                            zones.forEach(zone => {
                                 const block = createScheduleBlock(blocksData.title, blocksData.type, day, time);
                                 block.dataset.notes = blocksData.notes || '';
                                 zone.appendChild(block);
-                            }
+                            });
                         }
                     });
                 });
@@ -565,6 +759,102 @@
         document.getElementById('reflection-notes').addEventListener('input', function() {
             setTimeout(saveSchedule, 1000);
         });
+
+        // Export to Calendar functionality
+        function exportToCalendar() {
+            const schedule = {};
+            
+            // Collect all scheduled practices
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                const day = zone.dataset.day;
+                const time = zone.dataset.time;
+                const blocks = zone.querySelectorAll('div:not(button)');
+                
+                if (!schedule[day]) schedule[day] = {};
+                
+                if (blocks.length > 0) {
+                    schedule[day][time] = Array.from(blocks).map(block => ({
+                        title: block.dataset.title,
+                        type: block.dataset.type,
+                        notes: block.dataset.notes || ''
+                    }));
+                }
+            });
+
+            // Generate calendar text
+            let exportText = "RULE OF LIFE - CALENDAR EVENTS\n";
+            exportText += "=====================================\n\n";
+            exportText += "Copy each event below and create recurring calendar events:\n\n";
+
+            const dayNames = {
+                'monday': 'Monday',
+                'tuesday': 'Tuesday', 
+                'wednesday': 'Wednesday',
+                'thursday': 'Thursday',
+                'friday': 'Friday',
+                'saturday': 'Saturday',
+                'sunday': 'Sunday'
+            };
+
+            const timeSlots = {
+                'morning': '7:00 AM - 9:00 AM',
+                'midday': '12:00 PM - 1:00 PM', 
+                'evening': '6:00 PM - 8:00 PM'
+            };
+
+            Object.keys(schedule).forEach(day => {
+                Object.keys(schedule[day]).forEach(time => {
+                    const practices = schedule[day][time];
+                    if (practices && practices.length > 0) {
+                        const practiceNames = practices.map(p => p.title).join(', ');
+                        const practiceNotes = practices.filter(p => p.notes).map(p => `${p.title}: ${p.notes}`).join('\n');
+                        
+                        exportText += `EVENT: ${practiceNames}\n`;
+                        exportText += `DAY: Every ${dayNames[day]}\n`;
+                        exportText += `TIME: ${timeSlots[time]}\n`;
+                        exportText += `REPEAT: Weekly\n`;
+                        if (practiceNotes) {
+                            exportText += `NOTES: ${practiceNotes}\n`;
+                        }
+                        exportText += `\n`;
+                    }
+                });
+            });
+
+            if (exportText === "RULE OF LIFE - CALENDAR EVENTS\n=====================================\n\nCopy each event below and create recurring calendar events:\n\n") {
+                exportText += "No practices scheduled yet. Add some practices to your weekly schedule first!";
+            }
+
+            document.getElementById('export-text').value = exportText;
+            document.getElementById('export-modal').classList.remove('hidden');
+            document.getElementById('export-modal').classList.add('flex');
+        }
+
+        function closeExportModal() {
+            document.getElementById('export-modal').classList.add('hidden');
+            document.getElementById('export-modal').classList.remove('flex');
+        }
+
+        function copyExportText() {
+            const textArea = document.getElementById('export-text');
+            textArea.select();
+            textArea.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                const copyBtn = document.querySelector('button[onclick="copyExportText()"]');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('bg-green-700');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('bg-green-700');
+                }, 2000);
+            } catch (err) {
+                alert('Please manually select and copy the text above');
+            }
+        }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9843780aa3505869',t:'MTc1ODcyOTM1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9844067c05df4bab',t:'MTc1ODczNTE5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
