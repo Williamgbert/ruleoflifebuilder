@@ -120,44 +120,14 @@
     <div class="max-w-6xl mx-auto px-4 py-8">
         <!-- Spiritual Practices Library -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
-            <h2 class="text-xl font-medium text-slate-800 mb-6">Spiritual Practices</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                <div class="drag-item block-spiritual p-3 rounded-lg border border-blue-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="spiritual" data-title="Morning Prayer">
-                    🙏<br>Morning Prayer
-                </div>
-                <div class="drag-item block-spiritual p-3 rounded-lg border border-blue-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="spiritual" data-title="Scripture Reading">
-                    📖<br>Scripture Reading
-                </div>
-                <div class="drag-item block-spiritual p-3 rounded-lg border border-blue-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="spiritual" data-title="Contemplation">
-                    🕯️<br>Contemplation
-                </div>
-                <div class="drag-item block-spiritual p-3 rounded-lg border border-blue-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="spiritual" data-title="Evening Prayer">
-                    🌅<br>Evening Prayer
-                </div>
-                <div class="drag-item block-work p-3 rounded-lg border border-orange-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="work" data-title="Focused Work">
-                    💼<br>Focused Work
-                </div>
-                <div class="drag-item block-work p-3 rounded-lg border border-orange-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="work" data-title="Creative Work">
-                    🎨<br>Creative Work
-                </div>
-                <div class="drag-item block-rest p-3 rounded-lg border border-purple-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="rest" data-title="Sabbath Rest">
-                    🛌<br>Sabbath Rest
-                </div>
-                <div class="drag-item block-health p-3 rounded-lg border border-pink-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="health" data-title="Exercise">
-                    🏃<br>Exercise
-                </div>
-                <div class="drag-item block-community p-3 rounded-lg border border-yellow-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="community" data-title="Family Time">
-                    👨‍👩‍👧‍👦<br>Family Time
-                </div>
-                <div class="drag-item block-community p-3 rounded-lg border border-yellow-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="community" data-title="Fellowship">
-                    🤝<br>Fellowship
-                </div>
-                <div class="drag-item block-reflection p-3 rounded-lg border border-green-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="reflection" data-title="Journaling">
-                    📝<br>Journaling
-                </div>
-                <div class="drag-item block-reflection p-3 rounded-lg border border-green-200 text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow" draggable="true" data-type="reflection" data-title="Examen">
-                    🔍<br>Examen
-                </div>
+            <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
+                <h2 class="text-xl font-medium text-slate-800">Spiritual Practices</h2>
+                <button onclick="openCustomPracticeModal()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
+                    + Add Custom Practice
+                </button>
+            </div>
+            <div id="practices-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                <!-- Practices will be loaded dynamically -->
             </div>
         </div>
 
@@ -368,6 +338,16 @@
                     <label class="block text-sm font-medium text-slate-700 mb-2">Notes</label>
                     <textarea id="edit-notes" class="w-full p-3 border border-slate-200 rounded-lg h-24 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Add personal notes or intentions..."></textarea>
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Recurring Pattern</label>
+                    <select id="edit-recurring" class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="none">No recurrence</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekdays">Weekdays only</option>
+                        <option value="weekends">Weekends only</option>
+                        <option value="weekly">Weekly (same day)</option>
+                    </select>
+                </div>
             </div>
             <div class="flex gap-3 mt-6">
                 <button onclick="closeEditModal()" class="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors">
@@ -378,6 +358,42 @@
                 </button>
                 <button onclick="saveEdit()" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Practice Modal -->
+    <div id="custom-practice-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-medium text-slate-800 mb-4">Add Custom Practice</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Practice Name</label>
+                    <input type="text" id="custom-title" class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Lectio Divina">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Emoji (optional)</label>
+                    <input type="text" id="custom-emoji" class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="📿" maxlength="2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Category</label>
+                    <select id="custom-type" class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="spiritual">Spiritual</option>
+                        <option value="work">Work</option>
+                        <option value="rest">Rest</option>
+                        <option value="health">Health</option>
+                        <option value="community">Community</option>
+                        <option value="reflection">Reflection</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeCustomPracticeModal()" class="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors">
+                    Cancel
+                </button>
+                <button onclick="addCustomPractice()" class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                    Add Practice
                 </button>
             </div>
         </div>
@@ -404,10 +420,27 @@
         let draggedElement = null;
         let currentEditingBlock = null;
 
+        // Default practices
+        const defaultPractices = [
+            { title: 'Morning Prayer', emoji: '🙏', type: 'spiritual' },
+            { title: 'Scripture Reading', emoji: '📖', type: 'spiritual' },
+            { title: 'Contemplation', emoji: '🕯️', type: 'spiritual' },
+            { title: 'Evening Prayer', emoji: '🌅', type: 'spiritual' },
+            { title: 'Focused Work', emoji: '💼', type: 'work' },
+            { title: 'Creative Work', emoji: '🎨', type: 'work' },
+            { title: 'Sabbath Rest', emoji: '🛌', type: 'rest' },
+            { title: 'Exercise', emoji: '🏃', type: 'health' },
+            { title: 'Family Time', emoji: '👨‍👩‍👧‍👦', type: 'community' },
+            { title: 'Fellowship', emoji: '🤝', type: 'community' },
+            { title: 'Journaling', emoji: '📝', type: 'reflection' },
+            { title: 'Examen', emoji: '🔍', type: 'reflection' }
+        ];
+
         // Drag and Drop functionality
         document.addEventListener('DOMContentLoaded', function() {
             setupDragAndDrop();
             setupTouchSupport();
+            loadPractices();
             loadSchedule();
         });
 
@@ -628,6 +661,123 @@
             });
         }
 
+        // Load and manage practices
+        function loadPractices() {
+            const saved = localStorage.getItem('customPractices');
+            let practices = defaultPractices.slice(); // Copy default practices
+            
+            if (saved) {
+                const customPractices = JSON.parse(saved);
+                practices = practices.concat(customPractices);
+            }
+            
+            renderPractices(practices);
+        }
+
+        function renderPractices(practices) {
+            const grid = document.getElementById('practices-grid');
+            grid.innerHTML = '';
+            
+            practices.forEach(practice => {
+                const practiceElement = createPracticeElement(practice);
+                grid.appendChild(practiceElement);
+            });
+        }
+
+        function createPracticeElement(practice) {
+            const element = document.createElement('div');
+            element.className = `drag-item block-${practice.type} p-3 rounded-lg border border-${getBorderColor(practice.type)} text-sm font-medium text-slate-700 text-center cursor-grab hover:shadow-md transition-shadow relative group`;
+            element.draggable = true;
+            element.dataset.type = practice.type;
+            element.dataset.title = practice.title;
+            element.innerHTML = `${practice.emoji}<br>${practice.title}`;
+            
+            // Add delete button for custom practices (not default ones)
+            if (!defaultPractices.some(p => p.title === practice.title)) {
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '×';
+                deleteBtn.className = 'absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs leading-none hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity';
+                deleteBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    deletePractice(practice.title);
+                };
+                element.appendChild(deleteBtn);
+            }
+            
+            return element;
+        }
+
+        function getBorderColor(type) {
+            const colors = {
+                'spiritual': 'blue-200',
+                'work': 'orange-200',
+                'rest': 'purple-200',
+                'health': 'pink-200',
+                'community': 'yellow-200',
+                'reflection': 'green-200'
+            };
+            return colors[type] || 'gray-200';
+        }
+
+        function openCustomPracticeModal() {
+            document.getElementById('custom-practice-modal').classList.remove('hidden');
+            document.getElementById('custom-practice-modal').classList.add('flex');
+            document.getElementById('custom-title').focus();
+        }
+
+        function closeCustomPracticeModal() {
+            document.getElementById('custom-practice-modal').classList.add('hidden');
+            document.getElementById('custom-practice-modal').classList.remove('flex');
+            // Clear form
+            document.getElementById('custom-title').value = '';
+            document.getElementById('custom-emoji').value = '';
+            document.getElementById('custom-type').value = 'spiritual';
+        }
+
+        function addCustomPractice() {
+            const title = document.getElementById('custom-title').value.trim();
+            const emoji = document.getElementById('custom-emoji').value.trim() || '⭐';
+            const type = document.getElementById('custom-type').value;
+            
+            if (!title) {
+                alert('Please enter a practice name');
+                return;
+            }
+            
+            // Get existing custom practices
+            const saved = localStorage.getItem('customPractices');
+            let customPractices = saved ? JSON.parse(saved) : [];
+            
+            // Check if practice already exists
+            if (customPractices.some(p => p.title === title) || defaultPractices.some(p => p.title === title)) {
+                alert('A practice with this name already exists');
+                return;
+            }
+            
+            // Add new practice
+            const newPractice = { title, emoji, type };
+            customPractices.push(newPractice);
+            
+            // Save to localStorage
+            localStorage.setItem('customPractices', JSON.stringify(customPractices));
+            
+            // Reload practices
+            loadPractices();
+            closeCustomPracticeModal();
+        }
+
+        function deletePractice(title) {
+            if (confirm(`Delete "${title}" practice?`)) {
+                const saved = localStorage.getItem('customPractices');
+                if (saved) {
+                    let customPractices = JSON.parse(saved);
+                    customPractices = customPractices.filter(p => p.title !== title);
+                    localStorage.setItem('customPractices', JSON.stringify(customPractices));
+                    loadPractices();
+                }
+            }
+        }
+
         function createScheduleBlock(title, type, day, time) {
             const block = document.createElement('div');
             block.className = `block-${type} p-2 mb-1 rounded-lg border text-xs font-medium text-slate-700 cursor-pointer hover:shadow-md transition-shadow relative group`;
@@ -637,6 +787,7 @@
             block.dataset.day = day;
             block.dataset.time = time;
             block.dataset.notes = '';
+            block.dataset.recurring = 'none';
             
             // Add delete button
             const deleteBtn = document.createElement('button');
@@ -662,6 +813,7 @@
             currentEditingBlock = block;
             document.getElementById('edit-title').value = block.dataset.title;
             document.getElementById('edit-notes').value = block.dataset.notes || '';
+            document.getElementById('edit-recurring').value = block.dataset.recurring || 'none';
             document.getElementById('edit-modal').classList.remove('hidden');
             document.getElementById('edit-modal').classList.add('flex');
         }
@@ -676,10 +828,17 @@
             if (currentEditingBlock) {
                 const newTitle = document.getElementById('edit-title').value;
                 const newNotes = document.getElementById('edit-notes').value;
+                const newRecurring = document.getElementById('edit-recurring').value;
+                
+                // Handle recurring patterns
+                if (newRecurring !== 'none') {
+                    applyRecurringPattern(currentEditingBlock, newRecurring);
+                }
                 
                 currentEditingBlock.textContent = newTitle;
                 currentEditingBlock.dataset.title = newTitle;
                 currentEditingBlock.dataset.notes = newNotes;
+                currentEditingBlock.dataset.recurring = newRecurring;
                 
                 // Re-add the delete button since textContent overwrites it
                 const deleteBtn = document.createElement('button');
@@ -695,6 +854,58 @@
                 closeEditModal();
                 saveSchedule();
             }
+        }
+
+        function applyRecurringPattern(sourceBlock, pattern) {
+            const title = sourceBlock.dataset.title;
+            const type = sourceBlock.dataset.type;
+            const notes = sourceBlock.dataset.notes;
+            const sourceDay = sourceBlock.dataset.day;
+            const sourceTime = sourceBlock.dataset.time;
+            
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+            const weekends = ['saturday', 'sunday'];
+            
+            let targetDays = [];
+            
+            switch (pattern) {
+                case 'daily':
+                    targetDays = days;
+                    break;
+                case 'weekdays':
+                    targetDays = weekdays;
+                    break;
+                case 'weekends':
+                    targetDays = weekends;
+                    break;
+                case 'weekly':
+                    targetDays = [sourceDay];
+                    break;
+            }
+            
+            // Apply to all time slots if daily, weekdays, or weekends
+            const times = pattern === 'weekly' ? [sourceTime] : ['morning', 'midday', 'evening'];
+            
+            targetDays.forEach(day => {
+                times.forEach(time => {
+                    // Skip the source block
+                    if (day === sourceDay && time === sourceTime) return;
+                    
+                    // Find the drop zone
+                    const zones = document.querySelectorAll(`[data-day="${day}"][data-time="${time}"]`);
+                    zones.forEach(zone => {
+                        // Check if practice already exists in this slot
+                        const existingBlocks = zone.querySelectorAll(`[data-title="${title}"]`);
+                        if (existingBlocks.length === 0) {
+                            const newBlock = createScheduleBlock(title, type, day, time);
+                            newBlock.dataset.notes = notes;
+                            newBlock.dataset.recurring = pattern;
+                            zone.appendChild(newBlock);
+                        }
+                    });
+                });
+            });
         }
 
         function deleteBlock() {
@@ -732,7 +943,8 @@
                     schedule[day][time] = Array.from(blocks).map(block => ({
                         title: block.dataset.title,
                         type: block.dataset.type,
-                        notes: block.dataset.notes || ''
+                        notes: block.dataset.notes || '',
+                        recurring: block.dataset.recurring || 'none'
                     }));
                 } else {
                     schedule[day][time] = [];
@@ -773,6 +985,7 @@
                                 blocksData.forEach(blockData => {
                                     const block = createScheduleBlock(blockData.title, blockData.type, day, time);
                                     block.dataset.notes = blockData.notes || '';
+                                    block.dataset.recurring = blockData.recurring || 'none';
                                     zone.appendChild(block);
                                 });
                             });
@@ -782,6 +995,7 @@
                             zones.forEach(zone => {
                                 const block = createScheduleBlock(blocksData.title, blocksData.type, day, time);
                                 block.dataset.notes = blocksData.notes || '';
+                                block.dataset.recurring = blocksData.recurring || 'none';
                                 zone.appendChild(block);
                             });
                         }
@@ -896,5 +1110,5 @@
             }
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98440fc8d091ed8c',t:'MTc1ODczNTU3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'984432259746dd20',t:'MTc1ODczNjk3OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
